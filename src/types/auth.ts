@@ -1,14 +1,14 @@
-export type Role = "read-only" | "read-write"
-export type Permission = "read" | "write" | "delete"
+export type Role = "read-only" | "read-write";
+export type Permission = "read" | "write" | "delete";
 
 export interface User {
-  id: string
-  email: string
-  name: string
-  role: Role
+  id: string;
+  email: string;
+  name: string;
+  role: Role;
 }
 
-export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
+export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {
   "read-only": ["read"],
   "read-write": ["read", "write", "delete"],
-}
+};

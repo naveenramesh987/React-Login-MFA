@@ -14,11 +14,11 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
+    setupFiles: './src/tests/setup.ts',
     css: true,
     coverage: {
       provider: 'v8',
-      exclude: ['src/main.tsx', 'src/vite-env.d.ts', '**/*.d.ts', 'src/test/**'],
+      exclude: ['src/main.tsx', 'src/vite-env.d.ts', '**/*.d.ts', 'src/tests/**'],
     },
   },
 })

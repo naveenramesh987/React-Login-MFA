@@ -7,7 +7,7 @@ export interface MockAccount {
   password: string;
 }
 
-export const MOCK_ACCOUNTS: MockAccount[] = [
+export const MOCK_ACCOUNTS: readonly MockAccount[] = [
   {
     user: {
       id: "1",
