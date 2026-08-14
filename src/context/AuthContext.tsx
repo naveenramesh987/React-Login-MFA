@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 export type AuthState =
   | { status: "idle" }
-  | { status: "awaitingMfa"; challenge: MfaChallenge }
+  | { status: "mfaRequired"; challenge: MfaChallenge }
   | { status: "authenticated"; user: User };
 
 interface AuthContextValue {
@@ -32,7 +32,7 @@ export function useAuth(): AuthContextValue {
   return context;
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [state, setState] = useState<AuthState>({ status: "idle" });
 
   // useMemo stops this object being rebuilt on every render, which would make
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn: async (email: string, password: string) => {
         const result = await login(email, password);
         if (result.ok) {
-          setState({ status: "awaitingMfa", challenge: result.data });
+          setState({ status: "mfaRequired", challenge: result.data });
         }
         return result;
       },
@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Step 2. Only runs when the password step has already passed, because
       // that is the one state holding the challenge the code is checked against.
       verifyMfa: async (code: string) => {
-        if (state.status !== "awaitingMfa") {
+        if (state.status !== "mfaRequired") {
           return { ok: false, errorCode: "CHALLENGE_EXPIRED" };
         }
 
