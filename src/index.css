@@ -1,0 +1,21 @@
+:root {
+  --color-bg: #f4f5f7;
+  --color-surface: #ffffff;
+  --color-text: #1a1d21;
+  --color-border: #d3d8de;
+  --color-accent: #2563eb;
+  --color-accent-dark: #1d4ed8;
+  --color-error: #c0261a;
+  --color-error-bg: #fdecea;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+}

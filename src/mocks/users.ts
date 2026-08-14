@@ -1,5 +1,4 @@
 import type { User } from "../types/auth";
-
 export const MOCK_OTP = "123456";
 
 export interface MockAccount {
