@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   MIN_PASSWORD_LENGTH,
+  OTP_LENGTH,
   validateEmail,
+  validateOtp,
   validatePassword,
 } from "./validation";
 
@@ -47,5 +49,35 @@ describe("validatePassword", () => {
 
   it("counts spaces as real characters and never trims them", () => {
     expect(validatePassword("  secret  ")).toBeUndefined();
+  });
+});
+
+describe("validateOtp", () => {
+  it("accepts six digits", () => {
+    expect(validateOtp("123456")).toBeUndefined();
+  });
+
+  it("ignores spaces around the code", () => {
+    expect(validateOtp("  123456  ")).toBeUndefined();
+  });
+
+  it("asks for a value when the field is empty", () => {
+    expect(validateOtp("")).toBe("Code is required.");
+    expect(validateOtp("     ")).toBe("Code is required.");
+  });
+
+  it.each(["12a456", "abcdef", "12-456"])(
+    "rejects %s because it is not all numbers",
+    (badCode) => {
+      expect(validateOtp(badCode)).toBe(
+        "The code should only contain numbers.",
+      );
+    },
+  );
+
+  it.each(["12345", "1234567"])("rejects %s as the wrong length", (badCode) => {
+    expect(validateOtp(badCode)).toBe(
+      `The code should be ${OTP_LENGTH} digits.`,
+    );
   });
 });

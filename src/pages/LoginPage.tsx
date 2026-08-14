@@ -2,19 +2,12 @@ import { useState, type SubmitEvent } from "react";
 import { validateEmail, validatePassword } from "../utils/validation";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import type { AuthErrorCode } from "../services/authService";
-import styles from "./LoginPage.module.css";
+import styles from "../styles/authForm.module.css";
+import { ERROR_MESSAGES } from "../utils/authMessages";
 
 type FieldErrors = {
   email?: string;
   password?: string;
-};
-
-const ERROR_MESSAGES: Record<AuthErrorCode, string> = {
-  INVALID_CREDENTIALS: "That email and password do not match an account.",
-  INVALID_CODE: "That code is not correct.",
-  CHALLENGE_EXPIRED: "Your sign-in timed out. Please start again.",
-  TOO_MANY_ATTEMPTS: "Too many attempts. Please sign in again.",
 };
 
 export function LoginPage() {
@@ -62,7 +55,9 @@ export function LoginPage() {
   return (
     <main className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.title}>Sign In</h1>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Sign In</h1>
+        </div>
 
         <form className={styles.form} noValidate onSubmit={handleSubmit}>
           <div className={styles.field}>

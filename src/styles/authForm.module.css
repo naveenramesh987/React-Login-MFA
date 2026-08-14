@@ -6,6 +6,9 @@
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
   width: 100%;
   max-width: 380px;
   padding: 32px;
@@ -14,9 +17,21 @@
   border-radius: 8px;
 }
 
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .title {
-  margin: 0 0 24px;
+  margin: 0;
   font-size: 24px;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-muted);
 }
 
 .form {
@@ -36,7 +51,6 @@
   font-weight: 600;
 }
 
-/* 16px stops iPhones zooming in when the field is tapped. */
 .input {
   padding: 10px 12px;
   font-size: 16px;
@@ -46,15 +60,12 @@
   border-radius: 6px;
 }
 
-/* Shows the keyboard focus ring, but not when clicking with a mouse. */
 .input:focus-visible {
   border-color: var(--color-accent);
   outline: 2px solid var(--color-accent);
   outline-offset: 1px;
 }
 
-/* The red border comes from the same attribute a screen reader uses, so the
-   two can never disagree. */
 .input[aria-invalid="true"] {
   border-color: var(--color-error);
 }
@@ -93,4 +104,21 @@
 .button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.secondaryButton {
+  padding: 11px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-muted);
 }
