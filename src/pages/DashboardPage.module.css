@@ -1,0 +1,135 @@
+.page {
+  min-height: 100vh;
+  padding: 32px 24px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.title {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.signedInAs {
+  margin: 0;
+  font-size: 14px;
+  color: var(--color-muted);
+}
+
+.notice {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+
+.error {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--color-error);
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error);
+  border-radius: 6px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  padding: 12px 16px;
+  font-size: 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table th {
+  background: var(--color-header-bg);
+  font-weight: 600;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.status {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.statusActive {
+  color: var(--color-success-text);
+  background: var(--color-success-bg);
+}
+
+.statusInactive {
+  color: var(--color-muted);
+  background: var(--color-header-bg);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actionButton {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.actionButton:hover:not([aria-disabled="true"]) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.dangerButton:hover:not([aria-disabled="true"]) {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.actionButton[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.signOutButton {
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+}

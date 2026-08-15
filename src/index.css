@@ -8,6 +8,9 @@
   --color-error: #c0261a;
   --color-error-bg: #fdecea;
   --color-muted: #5b6470;
+  --color-success-bg: #e6f4ea;
+  --color-success-text: #1e7a3c;
+  --color-header-bg: #eef0f3;
 }
 
 * {
@@ -16,7 +19,11 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
   background: var(--color-bg);
   color: var(--color-text);
 }

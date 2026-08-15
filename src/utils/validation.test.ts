@@ -86,8 +86,12 @@ describe("validateOtp", () => {
 });
 
 describe("validateNewPassword", () => {
+  // Built from MIN_PASSWORD_LENGTH so these stay correct if it changes.
+  const validPassword = "a".repeat(MIN_PASSWORD_LENGTH - 1) + "1";
+  const oneCharShort = "a".repeat(MIN_PASSWORD_LENGTH - 2) + "1";
+
   it("accepts a password with letters and numbers", () => {
-    expect(validateNewPassword("password1")).toBeUndefined();
+    expect(validateNewPassword(validPassword)).toBeUndefined();
   });
 
   it("asks for a value when the field is empty", () => {
@@ -95,19 +99,19 @@ describe("validateNewPassword", () => {
   });
 
   it("rejects one character short of the minimum", () => {
-    expect(validateNewPassword("passwo1")).toBe(
+    expect(validateNewPassword(oneCharShort)).toBe(
       `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`,
     );
   });
 
   it("rejects a password with no letters", () => {
-    expect(validateNewPassword("12345678")).toBe(
+    expect(validateNewPassword("1".repeat(MIN_PASSWORD_LENGTH))).toBe(
       "Password must include at least one letter.",
     );
   });
 
   it("rejects a password with no numbers", () => {
-    expect(validateNewPassword("passwords")).toBe(
+    expect(validateNewPassword("a".repeat(MIN_PASSWORD_LENGTH))).toBe(
       "Password must include at least one number.",
     );
   });
@@ -116,18 +120,18 @@ describe("validateNewPassword", () => {
 describe("validatePasswordConfirmation", () => {
   it("accepts two identical passwords", () => {
     expect(
-      validatePasswordConfirmation("password1", "password1"),
+      validatePasswordConfirmation("same-value", "same-value"),
     ).toBeUndefined();
   });
 
   it("asks for a value when the field is empty", () => {
-    expect(validatePasswordConfirmation("password1", "")).toBe(
+    expect(validatePasswordConfirmation("same-value", "")).toBe(
       "Please type your password again.",
     );
   });
 
   it("rejects two different passwords", () => {
-    expect(validatePasswordConfirmation("password1", "password2")).toBe(
+    expect(validatePasswordConfirmation("one-value", "another-value")).toBe(
       "The passwords do not match.",
     );
   });
