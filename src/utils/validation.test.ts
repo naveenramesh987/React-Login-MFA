@@ -3,8 +3,11 @@ import {
   MIN_PASSWORD_LENGTH,
   OTP_LENGTH,
   validateEmail,
+  validateName,
+  validateNewPassword,
   validateOtp,
   validatePassword,
+  validatePasswordConfirmation,
 } from "./validation";
 
 describe("validateEmail", () => {
@@ -79,5 +82,63 @@ describe("validateOtp", () => {
     expect(validateOtp(badCode)).toBe(
       `The code should be ${OTP_LENGTH} digits.`,
     );
+  });
+});
+
+describe("validateNewPassword", () => {
+  it("accepts a password with letters and numbers", () => {
+    expect(validateNewPassword("password1")).toBeUndefined();
+  });
+
+  it("asks for a value when the field is empty", () => {
+    expect(validateNewPassword("")).toBe("Password is required.");
+  });
+
+  it("rejects one character short of the minimum", () => {
+    expect(validateNewPassword("passwo1")).toBe(
+      `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`,
+    );
+  });
+
+  it("rejects a password with no letters", () => {
+    expect(validateNewPassword("12345678")).toBe(
+      "Password must include at least one letter.",
+    );
+  });
+
+  it("rejects a password with no numbers", () => {
+    expect(validateNewPassword("passwords")).toBe(
+      "Password must include at least one number.",
+    );
+  });
+});
+
+describe("validatePasswordConfirmation", () => {
+  it("accepts two identical passwords", () => {
+    expect(
+      validatePasswordConfirmation("password1", "password1"),
+    ).toBeUndefined();
+  });
+
+  it("asks for a value when the field is empty", () => {
+    expect(validatePasswordConfirmation("password1", "")).toBe(
+      "Please type your password again.",
+    );
+  });
+
+  it("rejects two different passwords", () => {
+    expect(validatePasswordConfirmation("password1", "password2")).toBe(
+      "The passwords do not match.",
+    );
+  });
+});
+
+describe("validateName", () => {
+  it("accepts a name", () => {
+    expect(validateName("Riley Chen")).toBeUndefined();
+  });
+
+  it("rejects a name that is only spaces", () => {
+    expect(validateName("   ")).toBe("Name is required.");
   });
 });

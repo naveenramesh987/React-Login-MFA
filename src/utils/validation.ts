@@ -27,7 +27,7 @@ export function validatePassword(password: string): string | undefined {
   return undefined;
 }
 
-// Same for the code field. The code must be exactly 6 digits, and nothing
+// Same for the OTP field. The code must be exactly 6 digits, and nothing
 // else is accepted.
 export function validateOtp(otp: string): string | undefined {
   const trimmedOtp = otp.trim();
@@ -39,6 +39,40 @@ export function validateOtp(otp: string): string | undefined {
   }
   if (trimmedOtp.length !== OTP_LENGTH) {
     return `The code should be ${OTP_LENGTH} digits.`;
+  }
+  return undefined;
+}
+
+export function validateName(name: string): string | undefined {
+  const trimmedName = name.trim();
+  if (!trimmedName) {
+    return "Name is required.";
+  }
+  return undefined;
+}
+
+export function validateNewPassword(password: string): string | undefined {
+  if (!password) {
+    return "Password is required.";
+  }
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`;
+  }
+  if (!/[a-zA-Z]/.test(password)) {
+    return "Password must include at least one letter.";
+  }
+  if (!/\d/.test(password)) {
+    return "Password must include at least one number.";
+  }
+  return undefined;
+}
+
+export function validatePasswordConfirmation(password: string, confirmation: string): string | undefined {
+  if (!confirmation) {
+    return "Please type your password again.";
+  }
+  if (confirmation !== password) {
+    return "The passwords do not match.";
   }
   return undefined;
 }

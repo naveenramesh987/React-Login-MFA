@@ -1,9 +1,10 @@
 import { useState, type SubmitEvent } from "react";
 import { validateEmail, validatePassword } from "../utils/validation";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import styles from "../styles/authForm.module.css";
 import { ERROR_MESSAGES } from "../utils/authMessages";
+import { MOCK_ACCOUNTS } from "../mocks/users";
 
 type FieldErrors = {
   email?: string;
@@ -119,6 +120,25 @@ export function LoginPage() {
             {isSubmitting ? "Signing in…" : "Sign In"}
           </button>
         </form>
+
+        {/* Demo only. A real sign-in screen would never list credentials. */}
+        <div className={styles.hint}>
+          Demo accounts:
+          <ul className={styles.hintList}>
+            {MOCK_ACCOUNTS.map(({ user, password }) => (
+              <li key={user.id}>
+                {user.email} / {password} ({user.role})
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p className={styles.footer}>
+          Don't have an account?{" "}
+          <Link className={styles.link} to="/signup">
+            Sign up
+          </Link>
+        </p>
       </div>
     </main>
   );
