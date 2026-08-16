@@ -124,8 +124,6 @@ Both accounts are also listed on the login screen.
 - **The code is always `123456` and shown on screen.** Real MFA sends a new one.
 - **The fake passwords are committed on purpose.** Secret scanners flag them,
   which is a false alarm.
-- **Deep links need extra setup to deploy.** A host has to send unknown paths to
-  `index.html`. The dev server already does.
 - **Signing up does not create anything.** It checks every field, then says so.
 - **Refreshing during the code step starts you over.** Only a finished sign-in is
   saved.
