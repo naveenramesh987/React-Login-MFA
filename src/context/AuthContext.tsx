@@ -5,6 +5,7 @@ import {
   type Result,
 } from "../services/authService";
 import type { User } from "../types/auth";
+import { clearStoredUser, readStoredUser, storeUser } from "../utils/session";
 import { createContext, useContext, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
@@ -32,8 +33,15 @@ export function useAuth(): AuthContextValue {
   return context;
 }
 
+// Picks up a user saved earlier in this tab, so refreshing the page does not
+// sign anyone out. Runs once, when the provider first appears.
+function initialState(): AuthState {
+  const user = readStoredUser();
+  return user ? { status: "authenticated", user } : { status: "idle" };
+}
+
 export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
-  const [state, setState] = useState<AuthState>({ status: "idle" });
+  const [state, setState] = useState<AuthState>(initialState);
 
   // useMemo stops this object being rebuilt on every render, which would make
   // every screen using useAuth re-render for no reason.
@@ -60,6 +68,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 
         const result = await verifyOtp(state.challenge.challengeId, code);
         if (result.ok) {
+          storeUser(result.data);
           setState({ status: "authenticated", user: result.data });
         }
         return result;
@@ -67,6 +76,7 @@ export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
 
       // Throws away the signed-in user and sends everything back to the start.
       logout: () => {
+        clearStoredUser();
         setState({ status: "idle" });
       },
     }),

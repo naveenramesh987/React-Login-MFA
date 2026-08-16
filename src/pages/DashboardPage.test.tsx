@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { AuthProvider } from "../context/AuthContext";
 import { MOCK_ACCOUNTS, MOCK_OTP } from "../mocks/users";
+import { RequireStatus } from "../routes/RequireStatus";
 import { DashboardPage } from "./DashboardPage";
 import { LoginPage } from "./LoginPage";
 import { MfaPage } from "./MfaPage";
@@ -13,14 +14,28 @@ const [writer, viewer] = MOCK_ACCOUNTS;
 type Ui = ReturnType<typeof userEvent.setup>;
 type Account = (typeof MOCK_ACCOUNTS)[number];
 
-function renderFlow() {
-  render(
-    <MemoryRouter initialEntries={["/login"]}>
+function renderFlow(initialPath = "/login") {
+  return render(
+    <MemoryRouter initialEntries={[initialPath]}>
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/mfa" element={<MfaPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route
+            path="/mfa"
+            element={
+              <RequireStatus status="mfaRequired">
+                <MfaPage />
+              </RequireStatus>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <RequireStatus status="authenticated">
+                <DashboardPage />
+              </RequireStatus>
+            }
+          />
         </Routes>
       </AuthProvider>
     </MemoryRouter>,
@@ -59,10 +74,9 @@ describe("DashboardPage", () => {
     renderFlow();
     await signInAs(ui, writer);
 
-    expect(screen.getAllByRole("button", { name: "Delete" })[0]).toHaveAttribute(
-      "aria-disabled",
-      "false",
-    );
+    expect(
+      screen.getAllByRole("button", { name: "Delete" })[0],
+    ).toHaveAttribute("aria-disabled", "false");
     expect(
       screen.getByText("Your account can edit and delete resources."),
     ).toBeInTheDocument();
@@ -73,10 +87,9 @@ describe("DashboardPage", () => {
     renderFlow();
     await signInAs(ui, viewer);
 
-    expect(screen.getAllByRole("button", { name: "Delete" })[0]).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
+    expect(
+      screen.getAllByRole("button", { name: "Delete" })[0],
+    ).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByText("Your account is read-only.")).toBeInTheDocument();
   });
 
@@ -120,5 +133,80 @@ describe("DashboardPage", () => {
       screen.getByText("Your account cannot make changes."),
     ).toBeInTheDocument();
     expect(within(row).getByText("active")).toBeInTheDocument();
+  });
+
+  it("refuses a delete from a read-only account", async () => {
+    const ui = userEvent.setup();
+    renderFlow();
+    await signInAs(ui, viewer);
+
+    const row = screen.getByRole("row", { name: /us-east-gateway/ });
+    fireEvent.click(within(row).getByRole("button", { name: "Delete" }));
+
+    expect(
+      screen.getByText("Your account cannot delete resources."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("us-east-gateway")).toBeInTheDocument();
+  });
+
+  it("keeps the user signed in when the app is restarted", async () => {
+    const ui = userEvent.setup();
+    const { unmount } = renderFlow();
+    await signInAs(ui, writer);
+
+    // Tearing everything down and building it again is what a page refresh
+    // does. The session is read back from storage on the way up.
+    unmount();
+    renderFlow("/dashboard");
+
+    expect(
+      await screen.findByRole("heading", { name: "Resources" }),
+    ).toBeInTheDocument();
+  });
+
+  it("does not keep the user signed in after signing out", async () => {
+    const ui = userEvent.setup();
+    const { unmount } = renderFlow();
+    await signInAs(ui, writer);
+    await ui.click(screen.getByRole("button", { name: "Sign out" }));
+    await screen.findByRole("heading", { name: "Sign In" });
+
+    unmount();
+    renderFlow("/dashboard");
+
+    expect(
+      await screen.findByRole("heading", { name: "Sign In" }),
+    ).toBeInTheDocument();
+  });
+
+  it("returns to the login screen when signing out", async () => {
+    const ui = userEvent.setup();
+    renderFlow();
+    await signInAs(ui, writer);
+
+    await ui.click(screen.getByRole("button", { name: "Sign out" }));
+
+    expect(
+      await screen.findByRole("heading", { name: "Sign In" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Resources" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("allows signing in as a different account afterwards", async () => {
+    const ui = userEvent.setup();
+    renderFlow();
+
+    await signInAs(ui, writer);
+    expect(
+      screen.getByText("Your account can edit and delete resources."),
+    ).toBeInTheDocument();
+
+    await ui.click(screen.getByRole("button", { name: "Sign out" }));
+    await screen.findByRole("heading", { name: "Sign In" });
+
+    await signInAs(ui, viewer);
+    expect(screen.getByText("Your account is read-only.")).toBeInTheDocument();
   });
 });

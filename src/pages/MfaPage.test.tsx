@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { AuthProvider } from "../context/AuthContext";
 import { MOCK_ACCOUNTS, MOCK_OTP } from "../mocks/users";
+import { RequireStatus } from "../routes/RequireStatus";
 import { LoginPage } from "./LoginPage";
 import { MfaPage } from "./MfaPage";
 
@@ -17,7 +18,16 @@ function renderFlow() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/mfa" element={<MfaPage />} />
+          {/* Guarded exactly as the real app guards it, so a change that
+              bounces the user off this screen shows up here. */}
+          <Route
+            path="/mfa"
+            element={
+              <RequireStatus status="mfaRequired">
+                <MfaPage />
+              </RequireStatus>
+            }
+          />
           <Route path="/dashboard" element={<h1>Dashboard</h1>} />
         </Routes>
       </AuthProvider>
@@ -105,5 +115,25 @@ describe("MfaPage", () => {
     expect(
       screen.queryByRole("button", { name: "Verify" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("returns to sign in from the locked out screen", async () => {
+    const user = userEvent.setup();
+    renderFlow();
+    await reachMfaScreen(user);
+
+    await submitCode(user, "000000");
+    await screen.findByRole("button", { name: "Verify" });
+    await submitCode(user, "000000");
+    await screen.findByRole("button", { name: "Verify" });
+    await submitCode(user, "000000");
+
+    await user.click(
+      await screen.findByRole("button", { name: "Back to sign in" }),
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "Sign In" }),
+    ).toBeInTheDocument();
   });
 });
